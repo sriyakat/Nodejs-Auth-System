@@ -1,0 +1,96 @@
+AthenticationSystem/
+│
+├── src/
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── modules/
+│   │   └── auth/
+│   │       ├── auth.routes.js
+│   │       ├── auth.controller.js
+│   │       ├── auth.service.js
+│   │       ├── auth.repository.js
+│   │       ├── auth.validation.js
+│   │       └── auth.middleware.js
+│   │
+│   ├── middlewares/
+│   │   └── error.middleware.js
+│   │
+│   └── app.js
+│
+├── .env
+├── .gitignore
+└── server.js
+
+
+database=========================================
+Ek hi sp_Auth procedure se sabhi six operations handle honge.
+Registration aur login ke waqt Node.js service password hashing aur verification karegi. 
+Logout aur password reset par database mein session invalidation bhi hogi.
+
+ConnectionPool database connections ko reuse karta hai.
+poolPromise ek reusable connection pool provide karta hai.
+sql se hum stored procedure ke input parameters define karenge.
+Database connection fail hone par error throw hoga.
+
+
+Learning sequence================================
+
+Registration
+User ka name, email aur password validate karenge. bcrypt se password hash hoga aur REGISTER action se database mein save hoga.
+
+Login
+LOGIN action se user retrieve karenge, bcrypt.compare() se password verify hoga aur jsonwebtoken se JWT generate karenge. Uski jti ko CREATE_SESSION action se save karenge.
+
+JWT Middleware
+Request ke Bearer token ko verify karenge, phir VALIDATE_TOKEN action se database mein session check karenge.
+
+Logout
+LOGOUT action se session revoke karenge. Client ko apna token bhi delete karna hoga.
+
+Forgot and Reset Password
+Random, short-lived reset token generate karke uska hash store karenge.
+Production mein token email ke through bhejenge. 
+Reset par token validate karke password hash update karenge aur purane sessions revoke karenge.
+
+Postman testing
+Har endpoint ko success, invalid input, duplicate email, incorrect password, expired token aur unauthorized request ke saath test karenge.
+
+
+
+Security ke liye kuch zaroori baatein=============================
+
+Login mein incorrect email aur incorrect password dono ke liye same generic error return karenge.
+Forgot password mein account exist karta hai ya nahi, ye reveal nahi karenge.
+Password reset token ko database mein hashed form mein rakhenge, limited expiry aur single use ke saath.
+JWT secret ko .env mein rakhenge; production mein HTTPS aur secure token handling zaroori hai.
+Login aur password reset endpoints par rate limiting bhi add karenge.
+Production database mein email uniqueness ko case-insensitive policy ke 
+mutabik enforce karenge aur duplicate-registration race conditions handle karenge.
+
+
+Registration ka complete flow==================================
+1. Postman
+Name, Email, Password bhejega
+
+2. Route
+POST /api/auth/register
+
+3. Validation
+Required fields aur email check
+
+4. Controller
+Request aur response handle
+
+5. Service
+Password hash + business logic
+
+6. Repository
+sp_Auth ko parameters bhejega
+
+7. SQL Server
+User insert karega
+
+
+
+
