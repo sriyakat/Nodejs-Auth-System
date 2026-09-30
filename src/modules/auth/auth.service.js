@@ -18,6 +18,7 @@ const registerUser = async (name, email, password) => {
 const login = async(email, password)=>{
    try{
      const result = await authRepository.executeAuthSP('LOGIN', null, email, null);
+     console.log("Database se ye data aaya:", result);
      if(!result){
         return{
             success:false,
@@ -34,13 +35,13 @@ const login = async(email, password)=>{
         }
        // Password sahi hai, toh 2 Tokens Banao
        const AccessToken = jwt.sign(
-        {userId: result.Id, email:result.Email},
+        {userId: result.Id, email:result.Email, role:result.Role},
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: '15m' }
        );
        //Refresh Token (7 din me expire hoga)
        const RefreshToken = jwt.sign(
-         {userId:result.Id, email:result.Email},
+         {userId:result.Id, email:result.Email, role:result.Role},
         process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: '7d' }
        );

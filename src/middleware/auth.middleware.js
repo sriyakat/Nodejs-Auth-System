@@ -28,6 +28,24 @@ const verifyToken = (req, res, next) => {
 };
 
 
+const authorizeRole = (...allowedRoles) => {
+    return (req, res, next) => {
+        // req.user humein pichle guard (verifyToken) se mil chuka hai
+        // Kyunki humne token verify karte waqt decoded data req.user me daal diya tha
+        const userRole = req.user.role;
+
+        if (!allowedRoles.includes(userRole)) {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Access Denied: Aapke paas is page ko dekhne ki permission nahi hai." 
+            });
+        }
+        next();
+    };
+};
+
+
 module.exports = {
-    verifyToken
+    verifyToken,
+    authorizeRole
 };

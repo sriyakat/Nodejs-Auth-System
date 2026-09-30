@@ -88,9 +88,20 @@ const resetPasswordController = async (req, res) => {
 };
 
 
+//Sirf Admin ke liye function
+const adminOnlyData = (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Welcome Boss! Ye Admin ka private dashboard hai.",
+        adminDetails: req.user 
+    });
+};
+
+
 module.exports = {
     register,
     login,
     logout,
-    resetPasswordController
+    resetPasswordController,
+    adminOnlyData
 };

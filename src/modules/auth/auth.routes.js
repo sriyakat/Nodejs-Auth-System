@@ -3,13 +3,14 @@ const express = require('express');
 const router = express.Router();
 const authController = require('./auth.controller');
 const authValidation = require("./auth.validation");
-const { verifyToken } = require('../../middleware/auth.middleware.js');
+const { verifyToken, authorizeRole } = require('../../middleware/auth.middleware.js');
 
 
 router.post('/register',authValidation.validateRegister, authController.register);
 router.post('/login',authValidation.validateLogin, authController.login);
 router.post('/logout', verifyToken, authController.logout);
 router.post('/reset-password', authValidation.validateResetPassword, authController.resetPasswordController);
+router.get('/admin-dashboard', verifyToken, authorizeRole('Admin'), authController.adminOnlyData);
 
 
 // Ek test profile route aapke check karne ke liye
