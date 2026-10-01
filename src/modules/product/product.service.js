@@ -1,3 +1,4 @@
+const { executeAuthSP } = require('../auth/auth.repository');
 const productRepo = require('./product.repository');
 
 // CREATE PRODUCT ====================
@@ -23,11 +24,37 @@ const getAllProducts = async () => {
 
 //GET PRODUCT BY ID ==========================
 const getProductById = async(productId)=>{
-    const result = await productRepo.executeProductSP()
+    const result = await productRepo.executeProductSP( "GET_BY_ID", productId );
+    return result; 
+}
+
+//UPDATE PRODUCT Y ID ================
+const updateProduct = async(body, productId)=>{
+     const { name, price, description } = body
+    const result = await productRepo.executeProductSP(
+        "UPDATE",
+        parseInt(productId, 10),  // Id
+        name ?? null,
+        price ?? null,
+        description ?? null
+    );
+    return result;
+}
+
+
+//DELETE PRODUCT BY ID ====================
+const deleteProduct = async(productId)=>{
+    const result = await productRepo.executeProductSP(
+        "DELETE",
+        parseInt(productId)
+    )
 }
 
 
 module.exports = {
     getAllProducts,
-    createProduct
+    createProduct,
+    getProductById,
+    updateProduct,
+    deleteProduct
 };

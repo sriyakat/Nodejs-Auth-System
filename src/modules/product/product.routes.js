@@ -1,5 +1,3 @@
-// src/modules/products/product.routes.js
-
 const express = require('express');
 const router = express.Router();
 
@@ -9,6 +7,9 @@ const {verifyToken,authorizeRole} = require('../../middleware/auth.middleware.js
 
 router.get( '/',verifyToken,productController.getProducts);
 router.post('/',verifyToken,authorizeRole('Admin'), productController.createProduct);
+router.get("/:id", verifyToken, productController.getProductById);
+router.put("/:id", verifyToken, authorizeRole("Admin"), productController.updateProduct);
+router.delete("/:id", verifyToken, authorizeRole("Admin"), productController.deleteProduct);
 
 
-module.exports = router;
+module.exports = router; 
