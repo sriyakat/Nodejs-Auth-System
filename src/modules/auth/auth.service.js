@@ -1,7 +1,9 @@
 // src/modules/auth/auth.service.js
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const authRepository = require('./auth.repository');
+const { assertEmailConfiguration, sendPasswordResetEmail } = require('./auth.email');
 
 const registerUser = async (name, email, password) => {
     try {
@@ -18,7 +20,6 @@ const registerUser = async (name, email, password) => {
 const login = async(email, password)=>{
    try{
      const result = await authRepository.executeAuthSP('LOGIN', null, email, null);
-     console.log("Database se ye data aaya:", result);
      if(!result){
         return{
             success:false,
@@ -71,18 +72,35 @@ const logout = async (email) => {
 };
 
 
-//Reset Password Service
-const resetPassword = async (email, newPassword) => {
+const requestPasswordReset = async (email) => {
+    assertEmailConfiguration();
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
     try {
-        // Naye password ko hash (encrypt) karo
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        
-        // Database me update karo (Action: 'RESET_PASSWORD')
-        const dbResult = await authRepository.executeAuthSP('RESET_PASSWORD', null, email, hashedNewPassword, null);
-        
-        return dbResult;
+        const userExists = await authRepository.createPasswordResetToken(email, tokenHash, expiresAt);
+        if (userExists) {
+            await sendPasswordResetEmail(email, token);
+        }
     } catch (error) {
-        throw new Error(`Reset password service error: ${error.message}`);
+        const serviceError = new Error(`Password reset email request failed: ${error.message}`, { cause: error });
+        if (error.code) {
+            serviceError.code = error.code;
+        }
+        throw serviceError;
+    }
+};
+
+const resetPassword = async (token, newPassword) => {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    try {
+        return await authRepository.consumePasswordResetToken(tokenHash, passwordHash);
+    } catch (error) {
+        throw new Error(`Password reset service failed: ${error.message}`);
     }
 };
 
@@ -91,5 +109,6 @@ module.exports = {
     registerUser,
     login,
     logout,
+    requestPasswordReset,
     resetPassword
 };

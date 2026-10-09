@@ -92,5 +92,14 @@ sp_Auth ko parameters bhejega
 User insert karega
 
 
-
-
+Email password reset setup==================================
+1. SQL Server mein database/password-reset-tokens.sql migration ek baar run karein.
+2. SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASSWORD aur SMTP_FROM ko local .env mein set karein.
+   In values ko source control mein commit na karein; .env.example sirf template hai.
+   Agar Node.js SMTP certificate ko trust nahi karta, pehle antivirus/VPN/proxy ki SSL inspection check karein.
+   AVG Web/Mail Shield SSL scanning ko email shield settings mein disable karein, ya trusted AVG CA certificate PEM ko SMTP_TLS_CA_FILE mein set karein.
+   TLS verification disable na karein.
+3. FRONTEND_URL ko React app ke URL par set karein (local development: http://localhost:5173).
+4. POST /api/auth/forgot-password email par 30-minute reset link bhejta hai; endpoints par rate limits lage hain.
+5. Link par naya password set karne ke baad POST /api/auth/reset-password token consume karta hai.
+   Token database mein hash roop mein store hota hai aur ek hi baar use ho sakta hai.

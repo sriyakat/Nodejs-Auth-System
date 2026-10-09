@@ -48,15 +48,26 @@ const validateLogin = (req, res, next) => {
 };
 
 
-// Reset Password ka rule
-const resetPasswordSchema = Joi.object({
+const forgotPasswordSchema = Joi.object({
     email: Joi.string().email().required().messages({
         'string.email': 'Sahi email ID daalein'
     }),
+});
+
+const resetPasswordSchema = Joi.object({
+    token: Joi.string().hex().length(64).required(),
     newPassword: Joi.string().min(6).required().messages({
         'string.min': 'Naya password kam se kam 6 characters ka hona chahiye'
     })
 });
+
+const validateForgotPassword = (req, res, next) => {
+    const { error } = forgotPasswordSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ success: false, message: error.details[0].message });
+    }
+    next();
+};
 
 const validateResetPassword = (req, res, next) => {
     const { error } = resetPasswordSchema.validate(req.body);
@@ -70,5 +81,6 @@ const validateResetPassword = (req, res, next) => {
 module.exports = {
     validateRegister,
     validateLogin,
+    validateForgotPassword,
     validateResetPassword
 };
