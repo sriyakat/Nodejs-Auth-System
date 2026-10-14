@@ -1,7 +1,20 @@
 import { useState } from 'react'
+import AdminDashboard from './AdminDashboard.jsx'
+import EmployeeDashboard from './EmployeeDashboard.jsx'
+import { API_URL } from './api.js'
 import './App.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+function decodeAccessToken(token) {
+  try {
+    const payload = token.split('.')[1]
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const paddedBase64 = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
+    const bytes = Uint8Array.from(atob(paddedBase64), (character) => character.charCodeAt(0))
+    return JSON.parse(new TextDecoder().decode(bytes))
+  } catch {
+    return null
+  }
+}
 
 function App() {
   const [resetToken, setResetToken] = useState(
@@ -90,9 +103,15 @@ function App() {
         setMessage(result.message)
         form.reset()
       } else {
+        const accessToken = result.accessToken
+        const claims = decodeAccessToken(accessToken)
         setSession({
-          email: payload.email,
-          accessToken: result.accessToken,
+          email: result.user?.email || payload.email,
+          accessToken,
+          role: result.user?.role || claims?.role,
+          userId: result.user?.id || claims?.userId,
+          name: result.user?.name,
+          expiresAt: claims?.exp,
         })
       }
     } catch {
@@ -128,13 +147,37 @@ function App() {
     }
   }
 
+  if (session?.role?.toLowerCase() === 'admin') {
+    return (
+      <AdminDashboard
+        session={session}
+        error={error}
+        busy={busy}
+        onLogout={handleLogout}
+        onDismissError={() => setError('')}
+      />
+    )
+  }
+
+  if (session) {
+    return (
+      <EmployeeDashboard
+        session={session}
+        error={error}
+        busy={busy}
+        onLogout={handleLogout}
+        onDismissError={() => setError('')}
+      />
+    )
+  }
+
   const heading = isRegistering
     ? 'Create your account'
     : isForgotPassword
       ? 'Forgot your password?'
       : isResettingPassword
         ? 'Set a new password'
-        : 'Sign in to Nexora'
+        : 'Sign in to Auth Operations'
   const eyebrow = isRegistering
     ? 'GET STARTED'
     : isRecoveryMode
@@ -152,21 +195,21 @@ function App() {
     <main className="auth-page">
       <section className="auth-shell" aria-label="Authentication">
         <aside className="brand-panel">
-          <a className="brand" href="/" aria-label="Nexora home">
+          <a className="brand" href="/" aria-label="Auth Operations home">
             <span className="brand-mark" aria-hidden="true">
               <span />
               <span />
               <span />
             </span>
-            <span>nexora</span>
+            <span>Auth Operations</span>
           </a>
 
           <div className="brand-copy">
-            <span className="eyebrow">YOUR SPACE. YOUR RULES.</span>
-            <h1>Everything you need, right where you belong.</h1>
+            <span className="eyebrow">Manage. Monitor. Operate.</span>
+            <h1>Secure access for your operations.</h1>
             <p>
-              A calmer, more secure way to manage your account and keep your
-              work moving.
+              Manage your account, monitor team output and keep your workspace
+              moving with confidence.
             </p>
           </div>
 
@@ -183,7 +226,7 @@ function App() {
 
           <div className="brand-footer">
             <span className="status-dot" />
-            <span>Protected by end-to-end security</span>
+            <span>Secure access to your workspace</span>
           </div>
         </aside>
 
@@ -195,6 +238,12 @@ function App() {
               <h2>Welcome back.</h2>
               <p>
                 You are signed in as <strong>{session.email}</strong>.
+              </p>
+              <p className="form-message error-message" role="status">
+                Admin access was not found in this login session
+                {session.role ? ` (role: ${session.role})` : ''}. The dashboard
+                requires the <strong>Admin</strong> role. If you changed this
+                account’s role recently, sign out and sign in again.
               </p>
               {error && <p className="form-message error-message" role="alert">{error}</p>}
               <button
@@ -215,7 +264,7 @@ function App() {
                   <span />
                   <span />
                 </span>
-                <span>nexora</span>
+                <span>Auth Operations</span>
               </div>
 
               <div className="form-heading">
@@ -351,8 +400,8 @@ function App() {
         </section>
       </section>
       <footer className="page-footer">
-        <span>© 2026 Nexora</span>
-        <span>Made for your peace of mind</span>
+        <span>© 2026 Auth Operations</span>
+        <span>Manage. Monitor. Operate.</span>
       </footer>
     </main>
   )

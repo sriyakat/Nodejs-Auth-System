@@ -46,7 +46,8 @@ const login = async(req, res, next)=>{
     return res.status(200).json({
          success: true, 
          message: result.message,
-         accessToken: result.AccessToken
+         accessToken: result.AccessToken,
+         user: result.user
     });
     }catch(err){
         next(err)
@@ -130,21 +131,10 @@ const resetPasswordController = async (req, res) => {
 };
 
 
-//Sirf Admin ke liye function
-const adminOnlyData = (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Welcome Boss! Ye Admin ka private dashboard hai.",
-        adminDetails: req.user 
-    });
-};
-
-
 module.exports = {
     register,
     login,
     logout,
     forgotPasswordController,
-    resetPasswordController,
-    adminOnlyData
+    resetPasswordController
 };

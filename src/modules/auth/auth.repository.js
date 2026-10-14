@@ -18,6 +18,19 @@ const executeAuthSP = async (action, name, email, password, refreshToken = null)
     }
 };
 
+const getUserForLogin = async (email) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+        .input('Email', sql.VarChar(100), email)
+        .query(`
+            SELECT Id, Name, Email, Password, Role
+            FROM dbo.Users
+            WHERE Email = @Email
+        `);
+
+    return result.recordset[0] || null;
+};
+
 const createPasswordResetToken = async (email, tokenHash, expiresAt) => {
     const pool = await poolPromise;
     const transaction = new sql.Transaction(pool);
@@ -106,6 +119,7 @@ const consumePasswordResetToken = async (tokenHash, passwordHash) => {
 
 module.exports = {
     executeAuthSP,
+    getUserForLogin,
     createPasswordResetToken,
     consumePasswordResetToken
 };

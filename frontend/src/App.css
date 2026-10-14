@@ -541,3 +541,193 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+.auth-page {
+  padding: 38px 20px 22px;
+  background: #f4f6f3;
+}
+
+.auth-shell {
+  width: min(100%, 1050px);
+  min-height: 620px;
+  border: 1px solid #e1e6e0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 50px #26332b12;
+}
+
+.brand-panel {
+  min-height: 620px;
+  padding: 34px 39px 27px;
+  background: #222a26;
+}
+
+.brand,
+.mobile-brand {
+  color: #f5f7f5;
+  font-size: 18px;
+  letter-spacing: -.3px;
+}
+
+.brand-copy {
+  margin-top: 112px;
+}
+
+.brand-copy .eyebrow {
+  color: #b6c6b9;
+  letter-spacing: 1.15px;
+}
+
+.brand-copy h1 {
+  font-size: clamp(30px, 3.5vw, 39px);
+  letter-spacing: -1.1px;
+}
+
+.brand-copy p {
+  color: #c2cbc4;
+}
+
+.orbit-art {
+  display: none;
+}
+
+.brand-footer {
+  color: #bdc8c0;
+}
+
+.status-dot {
+  background: #87a88d;
+  box-shadow: none;
+}
+
+.form-panel {
+  padding: 55px clamp(32px, 6vw, 74px);
+  background: #fff;
+}
+
+.form-heading .eyebrow {
+  color: #6d7a70;
+  letter-spacing: 1.2px;
+}
+
+.form-heading h2,
+.welcome-card h2 {
+  color: #27312a;
+  font-weight: 630;
+  letter-spacing: -.8px;
+}
+
+.form-heading p,
+.welcome-card > p {
+  color: #6c766f;
+}
+
+.auth-tabs {
+  border-color: #e3e8e3;
+  background: #f3f5f3;
+}
+
+.auth-tab {
+  color: #6c766f;
+}
+
+.auth-tab:hover {
+  color: #354239;
+}
+
+.auth-tab.active {
+  background: #fff;
+  color: #334238;
+  box-shadow: 0 1px 3px #1c2b1f14;
+}
+
+.field {
+  color: #3f4942;
+}
+
+.field input {
+  border-color: #d9e0da;
+  background: #fff;
+  color: #27312a;
+}
+
+.field input::placeholder {
+  color: #98a19a;
+}
+
+.field input:focus {
+  border-color: #78977e;
+  box-shadow: 0 0 0 3px #78977e1c;
+}
+
+.submit-button {
+  background: #54775c;
+  color: #fff;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #44694d;
+}
+
+.submit-button:focus-visible,
+.auth-tab:focus-visible,
+.text-link:focus-visible {
+  outline-color: #63866b;
+}
+
+.text-link {
+  color: #4d7255;
+}
+
+.text-link:hover {
+  color: #365d3f;
+}
+
+.success-message {
+  border-color: #d2e2d4;
+  background: #f2f8f2;
+  color: #436a4a;
+}
+
+.error-message {
+  border-color: #ecd1cc;
+  background: #fff7f5;
+  color: #8a4b42;
+}
+
+.legal-note {
+  color: #727c75;
+}
+
+.legal-note span {
+  color: #4d5b51;
+}
+
+.success-icon {
+  border-color: #cbdccb;
+  background: #eff5ef;
+  color: #4e7656;
+}
+
+.page-footer {
+  color: #707a73;
+}
+
+@media (max-width: 620px) {
+  .auth-page {
+    padding: 12px;
+  }
+
+  .auth-shell {
+    min-height: calc(100vh - 72px);
+    border-radius: 10px;
+  }
+
+  .form-panel {
+    padding: 28px 23px;
+  }
+
+  .mobile-brand {
+    color: #27312a;
+  }
+}

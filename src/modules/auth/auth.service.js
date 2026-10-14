@@ -19,13 +19,19 @@ const registerUser = async (name, email, password) => {
 
 const login = async(email, password)=>{
    try{
-     const result = await authRepository.executeAuthSP('LOGIN', null, email, null);
+     const result = await authRepository.getUserForLogin(email);
      if(!result){
         return{
             success:false,
             message:"Please enter valid Email"
         }
      }
+        if (typeof result.Password !== 'string' || !/^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(result.Password)) {
+            return {
+                success: false,
+                message: "Please enter the correct email & password"
+            }
+        }
         // DB wale encrypted password se user ke normal password ko compare karo
         const isPasswordValid = await bcrypt.compare(password, result.Password);
         if(!isPasswordValid){
@@ -53,7 +59,13 @@ const login = async(email, password)=>{
         success:true,
         message:"login Successfully",
         AccessToken: AccessToken,
-        RefreshToken: RefreshToken
+        RefreshToken: RefreshToken,
+        user: {
+            id: result.Id,
+            name: result.Name,
+            email: result.Email,
+            role: result.Role
+        }
       }
    }catch(err){
     throw new Error(`Service error: ${err.message}`)

@@ -3,6 +3,7 @@ const express = require('express');
 const { rateLimit } = require('express-rate-limit');
 const router = express.Router();
 const authController = require('./auth.controller');
+const { adminOnlyData } = require('../admin/admin.controller');
 const authValidation = require("./auth.validation");
 const { verifyToken, authorizeRole } = require('../../middleware/auth.middleware.js');
 
@@ -33,7 +34,7 @@ router.post('/login',authValidation.validateLogin, authController.login);
 router.post('/logout', verifyToken, authController.logout);
 router.post('/forgot-password', forgotPasswordLimiter, authValidation.validateForgotPassword, authController.forgotPasswordController);
 router.post('/reset-password', resetPasswordLimiter, authValidation.validateResetPassword, authController.resetPasswordController);
-router.get('/admin-dashboard', verifyToken, authorizeRole('Admin'), authController.adminOnlyData);
+router.get('/admin-dashboard', verifyToken, authorizeRole('Admin'), adminOnlyData);
 
 
 // Ek test profile route aapke check karne ke liye
